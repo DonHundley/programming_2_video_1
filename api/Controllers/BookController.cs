@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using service;
@@ -20,21 +21,40 @@ public class BookController : ControllerBase
 
 
 
-    [HttpGet]
+    [HttpGet] // client wants to get something
     [Route("/api/books")]
-    public IEnumerable<BookFeedQuery> Get()
+    public ResponseDto Get()
     {
-        return _bookService.GetBooksForFeed();
+        return new ResponseDto()
+        {
+            MessageToClient = "Successfully created a book",
+            ResponseData = _bookService.GetBooksForFeed()
+        };
+    }
+
+    [HttpPost] // client wants to add something
+    [Route("/api/book")]
+    public ResponseDto Post([FromBody] CreateBookRequestDto dto)
+    {
+        HttpContext.Response.StatusCode = StatusCodes.Status201Created;
+        return new ResponseDto()
+        {
+            MessageToClient = "Successfully created a book",
+            ResponseData = _bookService.CreateBook(dto.BookTitle)
+        };
+
     }
 }
 
-
-public class Book
+public class ResponseDto
 {
-    public string Title { get; }
+    public string MessageToClient { get; set; }
+    public Object? ResponseData { get; set; }
+}
 
-    public Book(string title)
-    {
-        Title = title;
-    }
+public class CreateBookRequestDto
+{
+    [MinLength(5)]
+    public string BookTitle { get; set; }
+    
 }

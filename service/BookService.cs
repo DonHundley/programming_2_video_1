@@ -15,4 +15,12 @@ public class BookService
         return _bookRepository.GetBooksForFeed();
     }
 
+    public object CreateBook(string title)
+    {
+        if (true)
+        {
+            throw new Exception("Book with title" + title + " already exists");
+        }
+        return new { title = title };
+    }
 }
